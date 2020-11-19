@@ -4,6 +4,7 @@ from scipy.optimize import minimize
 
 # We want to maximize the sum of several functions
 # First lets make a function that returns a partial function
+#test
 
 #This will be the non linear part of each
 #Returns a function that takes X, and ..
