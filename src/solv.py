@@ -8,11 +8,6 @@ from scipy.optimize import minimize
 #basics learned here:
 #https://apmonitor.com/pdc/index.php/Main/NonlinearProgramming
 
-# We want to maximize the sum of several functions
-# First lets make a function that returns a partial function
-#test
-
-
 #Returns a function that returns clicks given spend.
 def make_clicks(intercept1,elasticity1) :
     def click_fn(spend) :
@@ -26,17 +21,34 @@ def make_orders(clk_fn,intercept2,elasticity2,cell1,cell3) :
         return 3.9 * exp(intercept2 + cell1 + cell3 + ( log(clk_fn(spend) ) * elasticity2 ) )
     return orders_fn
 
+#This returns a function that calculates profit given spend. This is our objective function.
 def make_profit(order_fn, aov, product_margin) :
     def profit_fn(spend) :
         return (order_fn(spend) * aov * product_margin) - spend
     return profit_fn
 
+#EXAMPLE. Create and profit function and evaluate with spend=10
+#prof = make_profit(make_orders(make_clicks(1.24,0.97),0.95,0.49,0.02,0.09),58.4,0.35)
+#spend=10
+#prof(spend)
 
+#List of Spends (What we are trying to optimize)
+spends=np.zeros(3)
+spends[0]=1.0
+spends[2]=11.0
+spends[3]=7.0
 
+#Corresponding list of functions that calculate profit.
+profit_fns=[]
 
-#Objective function is sum of partials.
-def objective(partials):
-    return partials[0]*partials[3]*(partials[0]+partials[1]+partials[2])+partials[2]
+#Objective function is sum of profits.
+#Given a list of profit functions, and a list of spend variables (That we are optimizing)
+def objective(profit_fns,spends):
+    sum_eq = 0.0
+    for i in range(0, len(profit_fns)):
+        sum_eq = sum_eq + profit_fns[i](spends[i])
+    return sum_eq
+
 
 
 def constraint1(x):
