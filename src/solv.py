@@ -1,17 +1,37 @@
+from math import exp
+from math import log
+
 import numpy as np
+
 from scipy.optimize import minimize
 
+#basics learned here:
+#https://apmonitor.com/pdc/index.php/Main/NonlinearProgramming
 
 # We want to maximize the sum of several functions
 # First lets make a function that returns a partial function
 #test
 
-#This will be the non linear part of each
-#Returns a function that takes X, and ..
-def partial(a,b) :
-    def partial_foo(x) :
-        return(a*b*x)
-    return partial_foo
+
+#Returns a function that returns clicks given spend.
+def make_clicks(intercept1,elasticity1) :
+    def click_fn(spend) :
+        return exp(intercept1 + (log(spend) * elasticity1 ))
+    return click_fn
+
+#Returns a function that returns orders given spend.
+#Not sure what cell1 and cell3 are in the original excel doc.
+def make_orders(clk_fn,intercept2,elasticity2,cell1,cell3) :
+    def orders_fn(spend) :
+        return 3.9 * exp(intercept2 + cell1 + cell3 + ( log(clk_fn(spend) ) * elasticity2 ) )
+    return orders_fn
+
+def make_profit(order_fn, aov, product_margin) :
+    def profit_fn(spend) :
+        return (order_fn(spend) * aov * product_margin) - spend
+    return profit_fn
+
+
 
 
 #Objective function is sum of partials.
