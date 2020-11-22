@@ -78,10 +78,20 @@ def make_profit(order_fn, aov, product_margin) :
 def profit_helper(aov,product_margin,intercept1,elasticity1,intercept2,elasticity2,cell1,cell3) :
     return make_profit(make_orders(make_clicks(intercept1,elasticity1),intercept2,elasticity2,cell1,cell3),aov,product_margin)
 
+#This is the easy way to describe a constraint function. Function only without limits.
+#This function is simply summing up the specified spends.
 def make_group_fn(start,end) :
     def group_fn(spends) :
         return sum(spends[start:end])
     return group_fn
+
+#This is the alternate way of defining constraints.
+#You bake the limit in to the equation, but it is not double ended constraint.
+def make_group_fn_v2(start,end,limit) :
+    def group_fn(spends) :
+        return limit - sum(spends[start:end])
+    return group_fn
+
 
 def init_spend(ranges) :
     """
@@ -101,32 +111,45 @@ def init_spend(ranges) :
 #Also, we want to maximize (but python only provides minimize, so flip the sign)
 def make_objective(profit_fns):
     def objective_fn(spends) :
-        sum_eq = 0.0
-        for i in range(0, len(profit_fns)):
-            sum_eq = sum_eq + profit_fns[i](spends[i])
-        return -sum_eq #flip the sign since we want to maximize
+        #         sum_eq = 0.0
+        #         for i in range(0, len(profit_fns)):
+        #             sum_eq = sum_eq + profit_fns[i](spends[i])
+        #         return -sum_eq #flip the sign since we want to maximize
+        return -sum(map(lambda x: x[0](x[1]), zip(profit_fns,spends)))
     return objective_fn
-
 
 #Extract max,min from demo_data and transpose to min,max
 spend_bounds = list(map(lambda x: (x[1],x[0]),map(lambda x: x[8:10], demo_data)))
 
 profit_fns = list(map(lambda x: profit_helper(x[0],x[1],x[2],x[3],x[4],x[5],x[6],x[7]), demo_data))
 
-#Sum of all spends
-gall = NonlinearConstraint(make_group_fn(0,len(demo_data)), -np.inf, 45010)
 
+################# CONSTRAINTS
 EPSILON = 0.01
-#Sum of a specific set(2,3,5) of spends = 1234.5
+#Sum of all spends
+gall = NonlinearConstraint(make_group_fn(0,len(demo_data)), -np.inf, 45000+(5*EPSILON))
 g1 = NonlinearConstraint(make_group_fn(0,10), 30097.0-EPSILON, 30097.0+EPSILON)
 g2 = NonlinearConstraint(make_group_fn(10,16), 2358.0-EPSILON, 2358.0+EPSILON)
 g3 = NonlinearConstraint(make_group_fn(16,23), 2578.0-EPSILON, 2578.0+EPSILON)
 g4 = NonlinearConstraint(make_group_fn(23,30), 4734.0-EPSILON, 4734.0+EPSILON)
 g5 = NonlinearConstraint(make_group_fn(30,37), 5233.0-EPSILON, 5233.0+EPSILON)
-
 cons = ([g1,g2,g3,g4,g5,gall])
-#cons = ([g1,g2,g3,g4,g5])
-#cons = ([gall])
+
+####Alternate way of defining constraints.
+# gall = {'type': 'ineq', 'fun': make_group_fn_v2(0,len(demo_data),45000)}
+# g1 = {'type': 'eq', 'fun': make_group_fn_v2(0,10,30097.0)}
+# g2 = {'type': 'eq', 'fun': make_group_fn_v2(10,16,2358.0)}
+# g3 = {'type': 'eq', 'fun': make_group_fn_v2(16,23,2578.0)}
+# g4 = {'type': 'eq', 'fun': make_group_fn_v2(23,30,4734.0)}
+# g5 = {'type': 'eq', 'fun': make_group_fn_v2(30,37,5233.0)}
+# cons = ([gall,g1,g2,g3,g4,g5])
+
+
+#################
+# con2 = {'type': 'eq', 'fun': constraint2}
+# cons = ([con1,con2])
+
+
 objective = make_objective(profit_fns)
 
 
