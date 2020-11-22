@@ -154,6 +154,8 @@ cons = ([g1,g2,g3,g4,g5,gall])
 objective = make_objective(profit_fns)
 
 
+#Hacky way to retry several times.. Since the function is nonlinear, it may not converge.
+#So we retry many times with different starting points.
 retry=True
 counter=0
 solution=None
