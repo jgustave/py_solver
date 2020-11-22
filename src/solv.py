@@ -100,10 +100,10 @@ def init_spend(ranges) :
     :param ranges:
     :return: np array
     """
+    #rand from 0-1
     rands = random.rand(1,len(ranges))[0]
-    z = list(zip(ranges,rands))
-    n2 = np.array(list(map(lambda tuple: tuple[0][0]+(tuple[0][1]-tuple[0][0])*tuple[1], z)))
-    return n2
+    # min + (max-min)*rand
+    return np.array(list(map(lambda x: x[0][0]+(x[0][1]-x[0][0])*x[1], zip(ranges,rands))))
 
 
 #Objective function is sum of profits.
