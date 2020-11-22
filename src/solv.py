@@ -121,6 +121,7 @@ def make_objective(profit_fns):
 #Extract max,min from demo_data and transpose to min,max
 spend_bounds = list(map(lambda x: (x[1],x[0]),map(lambda x: x[8:10], demo_data)))
 
+#Generate the profit function for each item
 profit_fns = list(map(lambda x: profit_helper(x[0],x[1],x[2],x[3],x[4],x[5],x[6],x[7]), demo_data))
 
 
