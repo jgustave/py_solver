@@ -129,6 +129,7 @@ profit_fns = list(map(lambda x: profit_helper(x[0],x[1],x[2],x[3],x[4],x[5],x[6]
 EPSILON = 0.01
 #Sum of all spends
 gall = NonlinearConstraint(make_group_fn(0,len(demo_data)), 0, 45000+(5*EPSILON))
+#Sum of group spends
 g1 = NonlinearConstraint(make_group_fn(0,10), 30097.0-EPSILON, 30097.0+EPSILON)
 g2 = NonlinearConstraint(make_group_fn(10,16), 2358.0-EPSILON, 2358.0+EPSILON)
 g3 = NonlinearConstraint(make_group_fn(16,23), 2578.0-EPSILON, 2578.0+EPSILON)
