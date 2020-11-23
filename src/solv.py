@@ -65,14 +65,14 @@ def make_clicks(intercept1,elasticity1) :
 #Returns a function that returns orders given spend.
 #Not sure what cell1 and cell3 are in the original excel doc.
 def make_orders(clk_fn,intercept2,elasticity2,cell1,cell3) :
-    def orders_fn(spends) :
-        return 3.9 * exp(intercept2 + cell1 + cell3 + ( log(clk_fn(spends) ) * elasticity2 ) )
+    def orders_fn(spend) :
+        return 3.9 * exp(intercept2 + cell1 + cell3 + ( log(clk_fn(spend) ) * elasticity2 ) )
     return orders_fn
 
 #This returns a function that calculates profit given spend. This is our objective function.
 def make_profit(order_fn, aov, product_margin) :
-    def profit_fn(spends) :
-        return (order_fn(spends) * aov * product_margin) - spends
+    def profit_fn(spend) :
+        return (order_fn(spend) * aov * product_margin) - spend
     return profit_fn
 
 def profit_helper(aov,product_margin,intercept1,elasticity1,intercept2,elasticity2,cell1,cell3) :
@@ -93,7 +93,7 @@ def make_group_fn_v2(start,end,limit) :
     return group_fn
 
 
-def init_spend(ranges) :
+def init_spends(ranges) :
     """
         Given a list of ranges (min,max) for each variable, init an array to a random value in the range.
         This array is the data structure that is used during calculation. the 'spends'
@@ -161,7 +161,7 @@ solution=None
 while retry and counter<100 :
     counter=counter+1
     try:
-        spends = init_spend(spend_bounds)
+        spends = init_spends(spend_bounds)
         solution = minimize(objective,
                             spends,
                             method='SLSQP',
