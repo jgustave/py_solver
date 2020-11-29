@@ -56,6 +56,8 @@ demo_data=((58.398254103185,0.350000000000,1.240958573018,0.972529086443,0.94760
 #Alternately you can just specify the function and pass in limit values using scipy.optimize.NonLinearConstraint  (Way simpler)
 #also: https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.NonlinearConstraint.html#scipy.optimize.NonlinearConstraint
 
+################# Functions to describe Profit function.
+
 #Returns a function that returns clicks given spend.
 def make_clicks(intercept1,elasticity1) :
     def click_fn(spend) :
@@ -78,6 +80,8 @@ def make_profit(order_fn, aov, product_margin) :
 def profit_helper(aov,product_margin,intercept1,elasticity1,intercept2,elasticity2,cell1,cell3) :
     return make_profit(make_orders(make_clicks(intercept1,elasticity1),intercept2,elasticity2,cell1,cell3),aov,product_margin)
 
+################# Functions to help with constraints.
+
 #This is the easy way to describe a constraint function. Function only without limits.
 #This function is simply summing up the specified spends.
 def make_group_fn(start,end) :
@@ -92,6 +96,7 @@ def make_group_fn_v2(start,end,limit) :
         return limit - sum(spends[start:end])
     return group_fn
 
+#################
 
 def init_spends(ranges) :
     """
@@ -147,7 +152,7 @@ cons = ([g1,g2,g3,g4,g5,gall])
 # cons = ([gall,g1,g2,g3,g4,g5])
 
 
-#################
+#####################################################################################
 
 #Make the objective function.
 objective = make_objective(profit_fns)
