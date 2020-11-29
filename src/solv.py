@@ -50,15 +50,8 @@ demo_data=(
 #basics learned here:
 #https://apmonitor.com/pdc/index.php/Main/NonlinearProgramming
 
-#Equality constraint means that the constraint function result is to be zero whereas inequality means that it is to be NON NEGATIVE
-#Constraint Cheat Sheet (how to formulate your constraint function):
-# A<=B  becomes B-A
-# A=B   becomes B-A
-# A>=B  becomes -(B-A)
-#Alternately you can just specify the function and pass in limit values using scipy.optimize.NonLinearConstraint  (Way simpler)
-#also: https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.NonlinearConstraint.html#scipy.optimize.NonlinearConstraint
 
-################# Functions to describe Profit function.
+################# Functions to describe Profit function. #########################################################
 
 #Returns a function that returns clicks given spend.
 def make_clicks(intercept1,elasticity1) :
@@ -82,7 +75,14 @@ def make_profit(order_fn, aov, product_margin) :
 def profit_helper(aov,product_margin,intercept1,elasticity1,intercept2,elasticity2,cell1,cell3) :
     return make_profit(make_orders(make_clicks(intercept1,elasticity1),intercept2,elasticity2,cell1,cell3),aov,product_margin)
 
-################# Functions to help with constraints.
+################# Functions to help with constraints. #####################################################
+#Equality constraint means that the constraint function result is to be zero whereas inequality means that it is to be NON NEGATIVE
+#Constraint Cheat Sheet (how to formulate your constraint function):
+# A<=B  becomes B-A
+# A=B   becomes B-A
+# A>=B  becomes -(B-A)
+#Alternately you can just specify the function and pass in limit values using scipy.optimize.NonLinearConstraint  (Way simpler)
+#also: https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.NonlinearConstraint.html#scipy.optimize.NonlinearConstraint
 
 #This is the easy way to describe a constraint function. Function only without limits.
 #This function is simply summing up the specified spends.
@@ -98,7 +98,7 @@ def make_group_fn_v2(start,end,limit) :
         return limit - sum(spends[start:end])
     return group_fn
 
-#################
+#########################################################
 
 def init_spends(ranges) :
     """
@@ -132,7 +132,7 @@ spend_bounds = list(map(lambda x: (x[1],x[0]),map(lambda x: x[8:10], demo_data))
 profit_fns = list(map(lambda x: profit_helper(x[0],x[1],x[2],x[3],x[4],x[5],x[6],x[7]), demo_data))
 
 
-################# CONSTRAINTS
+################# CONSTRAINTS #########################################################
 EPSILON = 0.01
 #Sum of all spends
 gall = NonlinearConstraint(make_group_fn(0,len(demo_data)), 0, 45000+(5*EPSILON))
