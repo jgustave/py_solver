@@ -134,7 +134,7 @@ profit_fns = list(map(lambda x: profit_helper(x[0],x[1],x[2],x[3],x[4],x[5],x[6]
 
 ################# CONSTRAINTS #########################################################
 EPSILON = 0.01
-#Sum of all spends
+#Sum of all spends. This constraint is unnecessary, and gnerally works better without it.
 gall = NonlinearConstraint(make_group_fn(0,len(demo_data)), 0, 45000+(5*EPSILON))
 #Sum of group spends
 g1 = NonlinearConstraint(make_group_fn(0,10), 30097.0-EPSILON, 30097.0+EPSILON)
@@ -144,7 +144,7 @@ g4 = NonlinearConstraint(make_group_fn(23,30), 4734.0-EPSILON, 4734.0+EPSILON)
 g5 = NonlinearConstraint(make_group_fn(30,37), 5233.0-EPSILON, 5233.0+EPSILON)
 cons = ([g1,g2,g3,g4,g5,gall])
 
-####Alternate way of defining constraints. I have seen it give totally wrong answers.
+####Alternate way of defining constraints. I have seen it give totally wrong answers. 
 # gall = {'type': 'ineq', 'fun': make_group_fn_v2(0,len(demo_data),45000)}
 # g1 = {'type': 'eq', 'fun': make_group_fn_v2(0,10,30097.0)}
 # g2 = {'type': 'eq', 'fun': make_group_fn_v2(10,16,2358.0)}
