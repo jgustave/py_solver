@@ -144,7 +144,7 @@ g4 = NonlinearConstraint(make_group_fn(23,30), 4734.0-EPSILON, 4734.0+EPSILON)
 g5 = NonlinearConstraint(make_group_fn(30,37), 5233.0-EPSILON, 5233.0+EPSILON)
 cons = ([g1,g2,g3,g4,g5,gall])
 
-####Alternate way of defining constraints. I have seen it give totally wrong answers. 
+####Alternate way of defining constraints. I have seen it give totally wrong answers.
 # gall = {'type': 'ineq', 'fun': make_group_fn_v2(0,len(demo_data),45000)}
 # g1 = {'type': 'eq', 'fun': make_group_fn_v2(0,10,30097.0)}
 # g2 = {'type': 'eq', 'fun': make_group_fn_v2(10,16,2358.0)}
