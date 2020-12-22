@@ -3,8 +3,8 @@ from datetime import timedelta, date
 #Code generate some SQL.
 
 #Start and end dates
-start_date = date(2020, 12, 1)
-end_date = date(2020, 12, 8)
+start_date = date(2020, 10, 19)
+end_date = date(2020, 10, 30)
 
 
 delta = timedelta(days=1)
@@ -40,7 +40,7 @@ for pvar in pvars:
         from
         (
         select *, ''none'' as location from (
-        select f.platform_channel,e.tactic_nm,b.campaign_nm,d.category_type as product_category, d.category_nm as business_category,a.event_ts,a.clicks,a.conversions,a.revenue,a.ad_spend
+        select f.platform_channel,e.tactic_nm,b.campaign_nm,d.category_type as product_category, d.category_nm as business_category,a.event_ts,a.clicks,g.c_orders as conversions,g.c_revenue as revenue,a.ad_spend
         from campaign_performance a
         join campaign b
         on (a.campaign_id = b.id)
@@ -52,6 +52,8 @@ for pvar in pvars:
         on (c.tactic_id=e.id)
         join platform_channel f
         on (b.platform_channel_id=f.id)
+		left join (select date(event_ts) as c_date,category_id, sum(orders) as c_orders, sum(revenue) as c_revenue from category_segment_actuals group by 1,2) g
+	    on(c.category_id = g.category_id and a.event_ts = g.c_date)        
         where category_nm != ''All''
         order by b.platform_channel_id,tactic_nm,campaign_nm,campaign_type,category_type,category_nm,event_ts
         ) aaa
