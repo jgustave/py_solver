@@ -3,7 +3,7 @@ import os
 
 #Split the 4 output files in to subdirectories with 1 file per ['marketing_channel','tactic','campaign']
 
-for f in ['ad_spend','conversions','clicks','revenue'] :
+for f in ['conversions','clicks','revenue'] :
     #read
     raw = pd.read_csv( '/tmp/'+f+'.csv', index_col=False)
 
