@@ -4,11 +4,11 @@ import os
 #Split the 4 output files in to subdirectories with 1 file per ['marketing_channel','tactic','campaign']
 
 
-pvars = ['ad_spend']
+pvars = ['ad_spend','clicks']
 
 for f in pvars :
     #read
-    raw = pd.read_csv( '/tmp/'+f+'.csv', index_col=False)
+    raw = pd.read_csv( '/tmp/p_'+f+'.csv', index_col=False)
 
     #create dir
     if not os.path.exists('/tmp/'+f):

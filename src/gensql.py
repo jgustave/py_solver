@@ -31,7 +31,7 @@ for d in dl:
     dstr2 += ('"_' + d.strftime("%Y-%m-%d") + '" float,')
 dstr2 = dstr2[0:-1]
 
-pvars = ['ad_spend']
+pvars = ['ad_spend','clicks']
 rvars = ['conversions','clicks','revenue']
 
 
@@ -120,6 +120,6 @@ for pvar in pvars:
              ''' + dstr2 + '''
             )
     )
-    to '/tmp/''' + pvar + '''.csv' csv header;'''
+    to '/tmp/p_''' + pvar + '''.csv' csv header;'''
 
     print(basic + b2 + '\n')
