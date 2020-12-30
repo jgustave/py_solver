@@ -35,19 +35,19 @@ pvars = ['ad_spend','clicks']
 rvars = ['conversions','clicks','revenue']
 
 
-#drop first 3 dimensions
+#drop first 2 dimensions
 for rvar in rvars:
 
     basic = '''copy
     (select customer_type,location,product_category, business_category,order_channel,''' + dstr0 + '''
-    from crosstab('select rank() OVER (ORDER BY marketing_channel, tactic, campaign, customer_type,location,product_category, business_category,order_channel) AS rn,
-                   marketing_channel, tactic, campaign, customer_type,location,product_category, business_category,order_channel, date, ''' + rvar
+    from crosstab('select rank() OVER (ORDER BY marketing_channel, tactic, customer_type,location,product_category, business_category,order_channel) AS rn,
+                   marketing_channel, tactic, customer_type,location,product_category, business_category,order_channel, date, ''' + rvar
     b2 = ''' from
-        (select platform_channel as marketing_channel,tactic_nm as tactic,campaign_nm as campaign,customer_type,location,product_category,business_category,order_channel,event_ts as date,clicks,conversions,revenue,ad_spend 
+        (select platform_channel as marketing_channel,tactic_nm as tactic,customer_type,location,product_category,business_category,order_channel,event_ts as date,clicks,conversions,revenue,ad_spend 
         from
         (
         select *, ''none'' as location from (
-        select f.platform_channel,e.tactic_nm,b.campaign_nm,d.category_type as product_category, d.category_nm as business_category,a.event_ts,a.clicks,g.c_orders as conversions,g.c_revenue as revenue,a.ad_spend
+        select f.platform_channel,e.tactic_nm,d.category_type as product_category, d.category_nm as business_category,a.event_ts,a.clicks,g.c_orders as conversions,g.c_revenue as revenue,a.ad_spend
         from campaign_performance a
         join campaign b
         on (a.campaign_id = b.id)
@@ -62,7 +62,7 @@ for rvar in rvars:
 		left join (select date(event_ts) as c_date,category_id, sum(orders) as c_orders, sum(revenue) as c_revenue from category_segment_actuals group by 1,2) g
 	    on(c.category_id = g.category_id and a.event_ts = g.c_date)        
         where category_nm != ''All''
-        order by b.platform_channel_id,tactic_nm,campaign_nm,campaign_type,category_type,category_nm,event_ts
+        order by b.platform_channel_id,tactic_nm,campaign_type,category_type,category_nm,event_ts
         ) aaa
         cross join (values (''new''),(''existing'')) bbb(customer_type)
         cross join (select distinct order_channel from category_segment_actuals) ccc
@@ -71,7 +71,7 @@ for rvar in rvars:
     ',''' + dstr1 + '''
             as bfoo
             (rn int,
-             marketing_channel text, tactic text , campaign text, customer_type text,location text,product_category text, business_category text,order_channel text,
+             marketing_channel text, tactic text , customer_type text,location text,product_category text, business_category text,order_channel text,
              ''' + dstr2 + '''
             )
     )
@@ -84,15 +84,15 @@ for rvar in rvars:
 for pvar in pvars:
 
     basic = '''copy
-    (select marketing_channel, tactic, campaign,customer_type,location,product_category, business_category,order_channel,''' + dstr0 + '''
-    from crosstab('select rank() OVER (ORDER BY marketing_channel, tactic, campaign, customer_type,location,product_category, business_category,order_channel) AS rn,
-                   marketing_channel, tactic, campaign, customer_type,location,product_category, business_category,order_channel, date, ''' + pvar
+    (select marketing_channel, tactic,customer_type,location,product_category, business_category,order_channel,''' + dstr0 + '''
+    from crosstab('select rank() OVER (ORDER BY marketing_channel, tactic, customer_type,location,product_category, business_category,order_channel) AS rn,
+                   marketing_channel, tactic, customer_type,location,product_category, business_category,order_channel, date, ''' + pvar
     b2 = ''' from
-        (select platform_channel as marketing_channel,tactic_nm as tactic,campaign_nm as campaign,customer_type,location,product_category,business_category,order_channel,event_ts as date,clicks,conversions,revenue,ad_spend 
+        (select platform_channel as marketing_channel,tactic_nm as tactic,customer_type,location,product_category,business_category,order_channel,event_ts as date,clicks,conversions,revenue,ad_spend 
         from
         (
         select *, ''none'' as location from (
-        select f.platform_channel,e.tactic_nm,b.campaign_nm,d.category_type as product_category, d.category_nm as business_category,a.event_ts,a.clicks,g.c_orders as conversions,g.c_revenue as revenue,a.ad_spend
+        select f.platform_channel,e.tactic_nm,d.category_type as product_category, d.category_nm as business_category,a.event_ts,a.clicks,g.c_orders as conversions,g.c_revenue as revenue,a.ad_spend
         from campaign_performance a
         join campaign b
         on (a.campaign_id = b.id)
@@ -107,7 +107,7 @@ for pvar in pvars:
 		left join (select date(event_ts) as c_date,category_id, sum(orders) as c_orders, sum(revenue) as c_revenue from category_segment_actuals group by 1,2) g
 	    on(c.category_id = g.category_id and a.event_ts = g.c_date)        
         where category_nm != ''All''
-        order by b.platform_channel_id,tactic_nm,campaign_nm,campaign_type,category_type,category_nm,event_ts
+        order by b.platform_channel_id,tactic_nm,campaign_type,category_type,category_nm,event_ts
         ) aaa
         cross join (values (''new''),(''existing'')) bbb(customer_type)
         cross join (select distinct order_channel from category_segment_actuals) ccc
@@ -116,10 +116,14 @@ for pvar in pvars:
     ',''' + dstr1 + '''
             as bfoo
             (rn int,
-             marketing_channel text, tactic text , campaign text, customer_type text,location text,product_category text, business_category text,order_channel text,
+             marketing_channel text, tactic text , customer_type text,location text,product_category text, business_category text,order_channel text,
              ''' + dstr2 + '''
             )
     )
     to '/tmp/p_''' + pvar + '''.csv' csv header;'''
 
     print(basic + b2 + '\n')
+
+
+    #existing,none,category,Charms,offline,
+    #existing, none, category, Necklaces & Pendants, offline,

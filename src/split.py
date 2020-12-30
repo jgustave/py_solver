@@ -15,18 +15,20 @@ for f in pvars :
         os.mkdir('/tmp/'+f)
 
     #split
-    ans = [y for x, y in raw.groupby(['marketing_channel','tactic','campaign'], as_index=False) ]
+    ans = [y for x, y in raw.groupby(['marketing_channel'], as_index=False) ]
 
     #Write output
     for a in ans:
         mc=a.iloc[0]['marketing_channel']
-        tactic=a.iloc[0]['tactic']
-        campaign=a.iloc[0]['campaign']
-        a.drop(columns=['marketing_channel','tactic','campaign'])\
+        #tactic=a.iloc[0]['tactic']
+        #campaign=a.iloc[0]['campaign']
+        
+        #Dropping tactic for now because it is duplicated in the data for some reason.. tactic contains business_category
+        a.drop(columns=['marketing_channel','tactic'])\
             .sort_values(['customer_type','location','product_category','business_category','order_channel'])\
-            .to_csv('/tmp/'+f+'/' + mc + '___' + tactic + '___' + campaign + '.csv', index=False)
+            .to_csv('/tmp/'+f+'/' + mc + '.csv', index=False)
 
-
+#Split only on marketing_channel.
 
 
 
