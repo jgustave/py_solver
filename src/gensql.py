@@ -45,7 +45,8 @@ for rvar in rvars:
 		 (select b.category_type as product_category,b.category_nm as business_category,a.date,a.conversions,a.revenue from 
 			( select date(event_ts) as date, category_id, sum(orders) as conversions, sum(revenue) as revenue from category_segment_actuals group by 1,2 ) a
 			join
-			category b on (a.category_id = b.id)) aaa
+			category b on (a.category_id = b.id)
+			where b.category_type=''category'') aaa
 		 ORDER BY 1',''' + dstr1 + ''' as bfoo
             (rn int,
              product_category text,business_category text,
@@ -67,7 +68,8 @@ b2 = ''' FROM
             from campaign_performance a
             join campaign_category_mapping b
             on (a.campaign_id = b.campaign_id )
-            join category e on (e.id=b.category_id) ) zzz
+            join category e on (e.id=b.category_id) 
+            where e.category_type=''category'' ) zzz
      ORDER BY 1',''' + dstr1 + ''' as bfoo
         (rn int,
          product_category text,business_category text,
@@ -103,7 +105,6 @@ for pvar in pvars:
         on (c.tactic_id=e.id)
         join platform_channel f
         on (b.platform_channel_id=f.id)
-        where category_nm != ''All''
         order by b.platform_channel_id,tactic_nm,campaign_type,category_type,category_nm,event_ts
         ) aaa
         cross join (values (''new''),(''existing'')) bbb(customer_type)
