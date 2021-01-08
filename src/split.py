@@ -17,18 +17,30 @@ for f in pvars :
     #split
     ans = [y for x, y in raw.groupby(['marketing_channel'], as_index=False) ]
 
+    #Write output for adwords
+    for a in ans:
+        mc=a.iloc[0]['marketing_channel']
+
+        if mc != 'DV360' and mc != 'facebook_social':
+            #Dropping tactic for now because it is duplicated in the data for some reason.. tactic contains business_category
+            a.drop(columns=['marketing_channel','tactic'])\
+                .sort_values(['customer_type','location','product_category','business_category','order_channel'])\
+                .to_csv('/tmp/'+f+'/' + mc + '.csv', index=False)
+
+
+    #Write For DV360 and FB
+    ans = [y for x, y in raw.groupby(['marketing_channel','tactic'], as_index=False) ]
+
     #Write output
     for a in ans:
         mc=a.iloc[0]['marketing_channel']
-        #tactic=a.iloc[0]['tactic']
-        #campaign=a.iloc[0]['campaign']
+        tactic=a.iloc[0]['tactic']
 
-        #Dropping tactic for now because it is duplicated in the data for some reason.. tactic contains business_category
-        a.drop(columns=['marketing_channel','tactic'])\
-            .sort_values(['customer_type','location','product_category','business_category','order_channel'])\
-            .to_csv('/tmp/'+f+'/' + mc + '.csv', index=False)
+        if mc == 'DV360' or mc == 'facebook_social':
+            a.drop(columns=['marketing_channel','tactic'])\
+                .sort_values(['customer_type','location','product_category','business_category','order_channel'])\
+                .to_csv('/tmp/'+f+'/' + mc + '___'+ tactic +'.csv', index=False)
 
-#Split only on marketing_channel.
 
 
 #(Demand Drivers)
